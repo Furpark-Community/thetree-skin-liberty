@@ -218,9 +218,39 @@ export default {
             isShowACLMessage: false
         };
     },
+	mounted() {
+	    this.showProfileImage();
+		initEasterEgg();
+        initKonamiEasterEgg();
+		const title = this.$store.state.page?.data?.document?.title?.trim().toLowerCase();
+        if(title?.includes('산골짜기늑대')) { this.showStars() };
+		this.$nextTick(() => {
+            // 초기 페이지 로드 시에도 실행되도록
+            this.updateNotFoundImage(this.$store.state.page.viewName)
+        })
+
+	},
     watch: {
+		'$store.state.page.viewName'(newVal) {
+            this.$nextTick(() => this.updateNotFoundImage(newVal))
+        },
         $route() {
             this.isShowACLMessage = false;
+        },
+		'$store.state.viewData.userProfile'(val) {
+			if (val) {
+				this.showProfileImage()
+			}
+        },
+        '$store.state.page.data.document.title'(val) {
+            const title = val?.trim().toLowerCase();
+			const stars = document.getElementById('stars');
+            if (title !== 'do a barrel roll') {} else {doABarrelRoll()}
+			if (title?.includes("산골짜기늑대")) {
+				this.showStars();
+			} else {
+				stars?.remove();
+			}
         }
     },
     head() {
@@ -256,6 +286,78 @@ export default {
         }
     },
     methods: {
+	    updateNotFoundImage(viewName) {
+            const article = document.querySelector('.wiki-article')
+            const existing = document.querySelector('#notfound-watermark')
+
+            if (existing) existing.remove()
+
+            if (viewName === 'notfound' && article) {
+                article.style.position = 'relative';
+                article.style.height = '400px';
+                const count = 2 // notfound 이미지 개수
+                const randomNum = Math.floor(Math.random() * count) + 1
+                const randomSrc = `/notfound${randomNum}.png`
+                const alertBox = article.querySelector('.thetree-alert')
+                let imgElement = `<img id="notfound-watermark"
+                       src="${randomSrc}"
+                       style="width: 250px; opacity: 0.4; right: 0px; padding-right: 10px; margin-right: 20px; z-index: 0; position: absolute; pointer-events:none;">`
+                if (alertBox) {
+                    alertBox.insertAdjacentHTML(
+					  'afterend',
+                      imgElement
+                    )
+                } else {
+                    article.insertAdjacentHTML(
+                      'afterbegin',
+                      imgElement
+                    )
+                }
+            } else {
+                    article.style.position = '';
+                    article.style.height = '';
+            }
+        },
+		showProfileImage() {
+			this.$nextTick(() => {
+                if(this.$store.state['viewData'].userProfile) {
+                    const existUserProfile = document.querySelector('.user-profile-table');
+                    if(existUserProfile) existUserProfile.remove();
+                    const content = document.querySelector('.wiki-content')
+                    let date = new Date(this.$store.state['viewData'].userProfile.createdAt).toLocaleDateString();
+                    let profileHtml = `<div class="wiki-paragraph">
+                          <table class="user-profile-table">
+                              <tr>
+                                  <td colspan=2 class="avatar-cell">
+                                      <img src="${this.$store.state['viewData'].userProfile.gravatarUrl}" alt="Avatar" class="avatar">
+                                  </td>
+                              </tr>
+                              <tr>
+                                  <td><strong class="clone-trigger">사용자명</strong></td>
+                                  <td>${this.$store.state['viewData'].userProfile.username}</td>
+                              </tr>
+                              <tr>
+                                  <td><strong>가입일</strong></td>
+                                  <td>${date}</td>
+                              </tr>
+							  <tr>
+                                  <td><strong>권한</strong></td>
+                                  <td>${this.$store.state['viewData'].userProfile.userPerm}</td>
+                              </tr>
+                              <tr>
+                                  <td><strong>ACL Group</strong></td>
+                                  <td>${this.$store.state['viewData'].userProfile.aclGroups}</td>
+                              </tr>
+                          </table>
+                      </div>`;
+                content.insertAdjacentHTML(
+                    'afterbegin',
+                    profileHtml
+                    )
+					bindCloneTrigger();
+                }
+			})
+		},
         showEditMessage() {
             if (this.isShowACLMessage) {
                 this.$router.push(this.doc_action_link(this.$store.state.page.data.document, this.requestable ? 'new_edit_request' : 'edit'));
@@ -291,7 +393,32 @@ export default {
         },
         openSettingModal() {
             this.$vfm.show({ component: SettingModal });
-        }
+        },
+		showStars() {
+			const content = document.querySelector('.wiki-article');
+			const stars = document.getElementById('stars');
+			if(stars) { return 0; }
+			content.insertAdjacentHTML('afterbegin', '<div id="stars"></div>');
+			const container = document.getElementById("stars");
+
+			for (let i = 0; i < 200; i++) {
+			    const star = document.createElement("div");
+	
+				const size = Math.random() * 3 + 1;
+
+			    star.className = "star";
+			    star.style.width = `${size}px`;
+			    star.style.height = `${size}px`;
+
+			    star.style.left = `${Math.random() * 100}%`;
+			    star.style.top = `${Math.random() * 100}%`;
+
+			    star.style.animationDuration =
+			        `${Math.random() * 4 + 2}s`;
+
+			    container.appendChild(star);
+			}
+		}
     }
 }
 </script>
