@@ -127,17 +127,7 @@ del, s, strike {
     min-height: 2.8rem;
     background-color: var(--liberty-brand-color, #4188f1);
     position: absolute;
-<<<<<<< HEAD
-    z-index: 300;
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
-=======
-<<<<<<< Updated upstream
-    z-index: 300;
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
-=======
     z-index: 100;
->>>>>>> Stashed changes
->>>>>>> cbdd5b6 (미반영분 반영)
     font-weight: bold;
     left: 0;
     right: 0;
@@ -717,8 +707,6 @@ div.scroll-buttons a {
 .scroll-buttons a:link, .scroll-buttons a:visited {
     color: white;
 }
-<<<<<<< HEAD
-=======
 
 .btn-randomly {
     align-content: center;
@@ -813,4 +801,3 @@ body.theseed-dark-mode .liberty-content>* {
     background:transparent !important;
 }
 
->>>>>>> cbdd5b6 (미반영분 반영)
