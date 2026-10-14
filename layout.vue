@@ -324,29 +324,34 @@ export default {
                     const existUserProfile = document.querySelector('.user-profile-table');
                     if(existUserProfile) existUserProfile.remove();
                     const content = document.querySelector('.wiki-content')
-                    let date = new Date(this.$store.state['viewData'].userProfile.createdAt).toLocaleDateString();
+                    if(!content) return;
+                    const profile = this.$store.state['viewData'].userProfile;
+                    // 아바타와 가입일은 비어 있을 수 있다 (이메일을 등록하지 않은 계정,
+                    // 계정이 사라진 사용자 문서). 그대로 넣으면 src="null" 과 Invalid Date 가 뜬다
+                    const createdAt = profile.createdAt ? new Date(profile.createdAt) : null;
+                    const date = (createdAt && !isNaN(createdAt)) ? createdAt.toLocaleDateString() : null;
                     let profileHtml = `<div class="wiki-paragraph">
                           <table class="user-profile-table">
-                              <tr>
+                              ${profile.gravatarUrl ? `<tr>
                                   <td colspan=2 class="avatar-cell">
-                                      <img src="${this.$store.state['viewData'].userProfile.gravatarUrl}" alt="Avatar" class="avatar">
+                                      <img src="${profile.gravatarUrl}" alt="Avatar" class="avatar">
                                   </td>
-                              </tr>
+                              </tr>` : ''}
                               <tr>
                                   <td><strong class="clone-trigger">사용자명</strong></td>
-                                  <td>${this.$store.state['viewData'].userProfile.username}</td>
+                                  <td>${profile.username}</td>
                               </tr>
-                              <tr>
+                              ${date ? `<tr>
                                   <td><strong>가입일</strong></td>
                                   <td>${date}</td>
-                              </tr>
+                              </tr>` : ''}
 							  <tr>
                                   <td><strong>권한</strong></td>
-                                  <td>${this.$store.state['viewData'].userProfile.userPerm}</td>
+                                  <td>${profile.userPerm}</td>
                               </tr>
                               <tr>
                                   <td><strong>ACL Group</strong></td>
-                                  <td>${this.$store.state['viewData'].userProfile.aclGroups}</td>
+                                  <td>${profile.aclGroups}</td>
                               </tr>
                           </table>
                       </div>`;
